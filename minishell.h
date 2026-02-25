@@ -125,6 +125,9 @@ char		**copy_tab(char **tab);
 void		*ft_safe_calloc(size_t count, size_t size, char *msg);
 int			ft_strcmp(const char *s1, const char *s2);
 void		free_tab(char **tab);
+int			is_whitespace(char c);
+int			is_quotation_mark(char c);
+int			is_special_char(char c);
 
 // ===== signal/signals.c =====
 void	signal_handler(t_sig_mode mode);
@@ -133,4 +136,14 @@ void    print_signal_exit(int status);
 // ===== signal/signals_heredoc.c =====
 void    heredoc_interrupt(int signum);
 void    main_heredoc_interrupt(int signum);
+
+char	**tokenizer(char *str);
+
+// ===== expander/ =====
+void    expand_tokens(char **tokens, char ***env_ptr, int *exit_status);
+void    strip_quotes(char **tokens);
+char    *expand_token(char *token, char ***env_ptr, int *exit_status);
+char    *expand_variable(char *token, int *i, char ***env_ptr, t_exp_tmp params);
+int     is_expandable_char(char c);
+char    *ft_strjoin_char1(char *str, char c);
 #endif

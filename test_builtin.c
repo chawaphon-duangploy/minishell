@@ -16,7 +16,6 @@
 #define RST "\033[0m"
 
 /* ── global required by signals.c / builtins ─────────────────────────────── */
-volatile sig_atomic_t	g_status = 0;
 
 /* ── test counter ────────────────────────────────────────────────────────── */
 static int	g_pass = 0;

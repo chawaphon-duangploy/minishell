@@ -12,6 +12,7 @@ INCLUDES  = -I. -I$(LIBFT_DIR)
 SRC =   main.c \
 		utils.c \
         main_exit.c \
+        tokenizer.c \
 		signal/signals.c \
 		signal/signals_heredoc.c \
         input_pharse.c \
@@ -24,12 +25,16 @@ SRC =   main.c \
         builtin/builtin_export.c \
         builtin/builtin_pwd.c \
         builtin/builtin_unset.c \
-        builtin/builtin_utils.c
+        builtin/builtin_utils.c \
+        expander/expander.c \
+        expander/expander_token.c \
+        expander/expander_var.c
 
 # test uses the same files minus main.c, plus test_builtin.c
 TEST_SRC = test_builtin.c \
            main_exit.c \
 		   utils.c \
+           tokenizer.c \
 		   signal/signals.c \
 		   signal/signals_heredoc.c \
            builtin/builtin_dispatch.c \
@@ -41,7 +46,10 @@ TEST_SRC = test_builtin.c \
            builtin/builtin_export.c \
            builtin/builtin_pwd.c \
            builtin/builtin_unset.c \
-           builtin/builtin_utils.c
+           builtin/builtin_utils.c \
+           expander/expander.c \
+           expander/expander_token.c \
+           expander/expander_var.c 
 
 OBJ      = $(SRC:.c=.o)
 TEST_OBJ = $(TEST_SRC:.c=.o)
