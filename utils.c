@@ -1,13 +1,12 @@
-
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    +:+   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minishell                                  +#+  +:+       +#+        */
+/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
-/*   Updated: 2024/01/01 00:00:00 by minishell        ###   ########.fr       */
+/*   Updated: 2026/02/27 15:00:55 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,46 +91,4 @@ char	*ft_getenv(char **env, const char *key)
 		i++;
 	}
 	return (NULL);
-}
-
-/* ── memory utils ────────────────────────────────────────────────────────── */
-
-void	*ft_safe_calloc(size_t count, size_t size, char *msg)
-{
-	void	*ptr;
-
-	ptr = ft_calloc(count, size);
-	if (!ptr)
-		exit_msg(msg);
-	return (ptr);
-}
-
-/* ── string utils ────────────────────────────────────────────────────────── */
-
-int	ft_strcmp(const char *s1, const char *s2)
-{
-	while (*s1 && *s1 == *s2)
-	{
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
-}
-
-/* ── lexer utils ─────────────────────────────────────────────────────────── */
-
-int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
-}
-
-int	is_quotation_mark(char c)
-{
-	return (c == '\'' || c == '"');
-}
-
-int	is_special_char(char c)
-{
-	return (is_whitespace(c) || c == '|' || c == '<' || c == '>'
-		|| c == '(' || c == ')' || c == '&');
 }

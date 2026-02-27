@@ -1,26 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
+/*   Updated: 2026/02/27 16:18:59 by cduangpl         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
-
-static int	is_token(char *str)
-{
-	if (str == NULL)
-		return (0);
-	if (ft_strncmp("&&", str, 2) == 0)
-		return (2);
-	if (ft_strncmp("||", str, 2) == 0)
-		return (2);
-	if (ft_strncmp("<<", str, 2) == 0)
-		return (2);
-	if (ft_strncmp(">>", str, 2) == 0)
-		return (2);
-	if (str[0] == '&' || str[0] == '|')
-		return (1);
-	if (str[0] == '(' || str[0] == ')')
-		return (1);
-	if (str[0] == '<' || str[0] == '>')
-		return (1);
-	return (0);
-}
 
 static int	token_len(char *str)
 {
@@ -67,32 +57,30 @@ static int	count_words(char *str)
 	return (cnt);
 }
 
-static void	fill_str(char *dst, char *src, int len)
+static void	fill_str(char *dst, char *src, int len, int quoted)
 {
 	int	i;
+	int	j;
 
+	j = 0;
+	if (quoted)
+		dst[j++] = '\x01';
 	i = 0;
 	while (i < len)
 	{
-		dst[i] = src[i];
+		dst[j] = src[i];
 		i++;
+		j++;
 	}
-	dst[len] = '\0';
+	dst[j] = '\0';
 }
 
-char	**tokenizer(char *str)
+static int	fill_tab(char **tab, char *str, int size)
 {
-	int		i;
-	int		j;
-	int		size;
-	int		len;
-	char	**tab;
+	int	i;
+	int	j;
+	int	len;
 
-	size = count_words(str);
-	tab = ft_safe_calloc(size + 1, sizeof(char *), "");
-	if (tab == NULL)
-		return (NULL);
-	tab[size] = NULL;
 	i = -1;
 	j = 0;
 	while (++i < size)
@@ -100,11 +88,27 @@ char	**tokenizer(char *str)
 		while (str[j] != '\0' && is_whitespace(str[j]))
 			j++;
 		len = token_len(&str[j]);
-		tab[i] = ft_safe_calloc(len + 1, sizeof(char), "");
+		tab[i] = ft_safe_calloc(len + 1 + is_fully_quoted(&str[j], len),
+				sizeof(char), "");
 		if (tab[i] == NULL)
-			return (NULL);
-		fill_str(tab[i], &str[j], len);
+			return (0);
+		fill_str(tab[i], &str[j], len, is_fully_quoted(&str[j], len));
 		j += len;
 	}
+	return (1);
+}
+
+char	**tokenizer(char *str)
+{
+	int		size;
+	char	**tab;
+
+	size = count_words(str);
+	tab = ft_safe_calloc(size + 1, sizeof(char *), "");
+	if (tab == NULL)
+		return (NULL);
+	tab[size] = NULL;
+	if (!fill_tab(tab, str, size))
+		return (NULL);
 	return (tab);
 }

@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_env.c                                      :+:      :+:    :+:   */
+/*   paser_check2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/27 14:34:01 by cduangpl          #+#    #+#             */
-/*   Updated: 2026/02/27 14:34:02 by cduangpl         ###   ########.fr       */
+/*   Created: 2026/02/27 15:12:18 by cduangpl          #+#    #+#             */
+/*   Updated: 2026/02/27 15:12:42 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	builtin_env(t_cmd_group *cmd)
+bool	is_heredoc_token(char *token)
 {
-	int		i;
-	char	**env;
+	return (token != NULL && ft_strncmp(token, "<<", 3) == 0);
+}
 
-	i = 0;
-	env = *(cmd->env_ptr);
-	while (env[i] != NULL)
-	{
-		if (ft_strchr(env[i], '=') != NULL)
-			ft_putendl_fd(env[i], cmd->out_fd);
-		i++;
-	}
-	close_builtin_fds(cmd);
-	return (0);
+bool	is_append_token(char *token)
+{
+	return (token != NULL && ft_strncmp(token, ">>", 3) == 0);
+}
+
+bool	is_simple_redirect(char *token, char c)
+{
+	return (token != NULL && token[0] == c && token[1] == '\0');
+}
+
+bool	is_pipe_token(char *token)
+{
+	return (token != NULL && ft_strncmp(token, "|", 2) == 0);
 }

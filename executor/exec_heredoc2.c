@@ -1,30 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_env.c                                      :+:      :+:    :+:   */
+/*   exec_heredoc2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/27 14:34:01 by cduangpl          #+#    #+#             */
-/*   Updated: 2026/02/27 14:34:02 by cduangpl         ###   ########.fr       */
+/*   Created: 2026/02/27 15:37:17 by cduangpl          #+#    #+#             */
+/*   Updated: 2026/02/27 15:44:11 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	builtin_env(t_cmd_group *cmd)
+void	heredoc_eof(t_cmd_group *cur)
 {
-	int		i;
-	char	**env;
-
-	i = 0;
-	env = *(cmd->env_ptr);
-	while (env[i] != NULL)
-	{
-		if (ft_strchr(env[i], '=') != NULL)
-			ft_putendl_fd(env[i], cmd->out_fd);
-		i++;
-	}
-	close_builtin_fds(cmd);
-	return (0);
+	ft_putstr_fd("minishell: warning: here-document delimited", STDERR_FILENO);
+	ft_putstr_fd(" by end-of-file (wanted `", STDERR_FILENO);
+	ft_putstr_fd(cur->lim, STDERR_FILENO);
+	ft_putendl_fd("')", STDERR_FILENO);
 }

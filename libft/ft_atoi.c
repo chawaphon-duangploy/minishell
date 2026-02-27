@@ -6,7 +6,7 @@
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/28 23:52:15 by cduangpl          #+#    #+#             */
-/*   Updated: 2025/10/13 23:48:45 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:20:37 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,6 @@ int	ft_atoi(const char *str)
 	return (handle_overflow(result, sign));
 }
 
-
 // The atoi() function converts a string to its int representation.
 // 1. The string passed as parameter may begin with an 
 // arbitrary number of whitespaces as determined by isspace(3)
@@ -74,13 +73,3 @@ int	ft_atoi(const char *str)
 // \f => form feed
 // \r => carriage return
 // ' ' => space
-
-int main()
-{
-	char *x = "145a";
-	int a;
-
-	a = ft_atoi(x);
-	printf("%i",a);
-	return(0);
-}

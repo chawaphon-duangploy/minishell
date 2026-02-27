@@ -1,14 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_cd.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
+/*   Updated: 2026/02/27 14:28:21 by cduangpl         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	update_pwd(char ***env_ptr, int update_old)
+int	update_pwd(char ***env_ptr)
 {
 	char	cwd[PATH_MAX];
 	char	*entry;
 
 	if (!getcwd(cwd, sizeof(cwd)))
 		return (0);
-	entry = ft_strjoin(update_old ? "OLDPWD=" : "PWD=", cwd);
+	entry = ft_strjoin("PWD=", cwd);
 	if (!entry)
 		return (0);
 	set_env_var(env_ptr, entry);
@@ -16,27 +27,18 @@ static int	update_pwd(char ***env_ptr, int update_old)
 	return (1);
 }
 
-static void	revise_oldpwd(t_cmd_group *cmd, const char *oldpwd)
+int	update_oldpwd(char ***env_ptr, const char *saved_pwd)
 {
-	char	*entry;
+	char	*old_entry;
 
-	entry = ft_strjoin("OLDPWD=", oldpwd);
-	if (entry)
-	{
-		set_env_var(cmd->env_ptr, entry);
-		free(entry);
-	}
-	perror("cd");
-	close_builtin_fds(cmd);
-}
-
-static char	*expand_home(const char *path, const char *home)
-{
-	if (!path)
-		return (NULL);
-	if (path[0] != '~')
-		return (ft_strdup(path));
-	return (ft_strjoin(home, &path[1]));
+	if (!saved_pwd || !saved_pwd[0])
+		return (0);
+	old_entry = ft_strjoin("OLDPWD=", saved_pwd);
+	if (!old_entry)
+		return (0);
+	set_env_var(env_ptr, old_entry);
+	free(old_entry);
+	return (1);
 }
 
 static char	*resolve_path(const char *path, const char *oldpwd,
@@ -48,22 +50,12 @@ static char	*resolve_path(const char *path, const char *oldpwd,
 		return (ft_strdup(oldpwd));
 	}
 	if (path[0] == '~')
-		return (expand_home(path, home));
+	{
+		if (!home)
+			return (NULL);
+		return (ft_strjoin(home, &path[1]));
+	}
 	return (ft_strdup(path));
-}
-
-static int	update_oldpwd(char ***env_ptr, const char *saved_pwd)
-{
-	char	*old_entry;
-
-	if (!saved_pwd[0])
-		return (0);
-	old_entry = ft_strjoin("OLDPWD=", saved_pwd);
-	if (!old_entry)
-		return (0);
-	set_env_var(env_ptr, old_entry);
-	free(old_entry);
-	return (1);
 }
 
 static int	handle_cd(t_cmd_group *cmd, const char *path,
@@ -75,10 +67,7 @@ static int	handle_cd(t_cmd_group *cmd, const char *path,
 
 	home = ft_getenv(*(cmd->env_ptr), "HOME");
 	if (!home && path[0] == '~')
-	{
-		ft_putstr_fd("cd: HOME not set\n", STDERR_FILENO);
-		return (1);
-	}
+		return (ft_putstr_fd("cd: HOME not set\n", STDERR_FILENO), 1);
 	if (!getcwd(saved_pwd, sizeof(saved_pwd)))
 		saved_pwd[0] = '\0';
 	resolved = resolve_path(path, oldpwd, home, fd);
@@ -87,12 +76,12 @@ static int	handle_cd(t_cmd_group *cmd, const char *path,
 	if (chdir(resolved) != 0)
 	{
 		free(resolved);
-		revise_oldpwd(cmd, oldpwd);
+		perror("cd");
 		return (1);
 	}
 	free(resolved);
 	update_oldpwd(cmd->env_ptr, saved_pwd);
-	update_pwd(cmd->env_ptr, 0);
+	update_pwd(cmd->env_ptr);
 	return (0);
 }
 

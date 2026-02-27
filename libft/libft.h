@@ -6,7 +6,7 @@
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/28 22:41:14 by cduangpl          #+#    #+#             */
-/*   Updated: 2026/02/24 20:36:26 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/02/27 14:21:01 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ void	ft_lstdelone(t_list *lst, void (*del)(void*));
 void	ft_lstclear(t_list **lst, void (*del)(void*));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
-int     ft_strcmp(const char *s1, const char *s2);
-long    ft_atol(const char *str);
-
+int		ft_strcmp(const char *s1, const char *s2);
+long	ft_atol(const char *str);
 #endif

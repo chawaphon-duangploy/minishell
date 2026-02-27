@@ -6,62 +6,89 @@
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
-/*   Updated: 2026/02/25 08:29:40 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/02/27 15:18:14 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-/*
-** Temporary executor — runs a single builtin from argv.
-** Replace this once executor.c / parser.c are built.
-*/
-static int	run_line(char **argv, char ***env_ptr)
+static void	set_shlvl(char ***env_ptr)
 {
-	t_cmd_group	cmd;
+	char	*shlvl;
+	char	*num;
+	char	*entry;
+	int		lvl;
 
-	if (!argv || !argv[0])
-		return (0);
-	ft_bzero(&cmd, sizeof(t_cmd_group));
-	cmd.cmd = argv[0];
-	cmd.argv = argv;
-	cmd.env_ptr = env_ptr;
-	cmd.in_fd = STDIN_FILENO;
-	cmd.out_fd = STDOUT_FILENO;
-	if (is_builtin(argv[0]))
-		return (execute_builtin(&cmd));
-	ft_putstr_fd("minishell: command not found: ", STDERR_FILENO);
-	ft_putendl_fd(argv[0], STDERR_FILENO);
-	return (127);
+	shlvl = ft_getenv(*env_ptr, "SHLVL");
+	if (shlvl)
+		lvl = ft_atoi(shlvl) + 1;
+	else
+		lvl = 1;
+	num = ft_itoa(lvl);
+	entry = ft_strjoin("SHLVL=", num);
+	free(num);
+	set_env_var(env_ptr, entry);
+	free(entry);
 }
 
-int	main(int argc, char **argv, char **envp)
+static char	**init_env(char **envp)
 {
-	char	*line;
-	char	**tokens;
 	char	**env;
-	char	***env_ptr;
-	int		exit_status;
 	int		i;
 
-	(void)argc;
-	(void)argv;
 	env = NULL;
-	exit_status = 0;
 	i = 0;
-	if (envp)
+	if (!envp)
+		return (NULL);
+	while (envp[i])
+		i++;
+	env = ft_calloc(i + 1, sizeof(char *));
+	if (!env)
+		return (NULL);
+	i = 0;
+	while (envp[i])
 	{
-		while (envp[i])
-			i++;
-		env = ft_calloc(i + 1, sizeof(char *));
-		i = 0;
-		while (envp[i])
+		env[i] = ft_strdup(envp[i]);
+		i++;
+	}
+	return (env);
+}
+
+static void	process_line(char *line, char ***env_ptr, int *exit_status)
+{
+	t_cmd_group	*cmds;
+
+	if (!is_completed_quotes(line))
+	{
+		ft_putstr_fd("minishell: syntax error: unclosed quote\n",
+			STDERR_FILENO);
+		*exit_status = 2;
+		get_exit_stats(*exit_status);
+	}
+	else if (!is_valid_tokens(line))
+	{
+		*exit_status = 2;
+		get_exit_stats(*exit_status);
+	}
+	else
+	{
+		cmds = init_cmd_group(line, env_ptr, exit_status);
+		if (cmds)
 		{
-			env[i] = ft_strdup(envp[i]);
-			i++;
+			*exit_status = execute_command(cmds);
+			if (*exit_status == 130)
+				g_status = SIGINT;
+			get_exit_stats(*exit_status);
 		}
 	}
-	env_ptr = &env;
+}
+
+static int	run_shell(char ***env_ptr)
+{
+	char	*line;
+	int		exit_status;
+
+	exit_status = 0;
 	signal_handler(MAIN);
 	while (1)
 	{
@@ -74,13 +101,31 @@ int	main(int argc, char **argv, char **envp)
 		if (*line)
 		{
 			add_history(line);
-			tokens = tokenizer(line);
-			expand_tokens(tokens, env_ptr, &exit_status);
-			strip_quotes(tokens);
-			exit_status = run_line(tokens, env_ptr);
-			free_tab(tokens);
+			process_line(line, env_ptr, &exit_status);
 		}
 		free(line);
 	}
-	return (0);
+	if (g_status == SIGINT)
+		return (130);
+	return (exit_status);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	char	**env;
+	char	***env_ptr;
+
+	if (argc > 1)
+	{
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(argv[1], STDERR_FILENO);
+		ft_putendl_fd(": command not found", STDERR_FILENO);
+		return (127);
+	}
+	(void)argc;
+	(void)argv;
+	env = init_env(envp);
+	env_ptr = &env;
+	set_shlvl(env_ptr);
+	return (run_shell(env_ptr));
 }

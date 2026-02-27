@@ -11,11 +11,14 @@ INCLUDES  = -I. -I$(LIBFT_DIR)
 
 SRC =   main.c \
 		utils.c \
+        utils2.c \
         main_exit.c \
         tokenizer.c \
+        tokenizer_utils.c \
+        quotes_check.c \
 		signal/signals.c \
+        signal/signals2.c \
 		signal/signals_heredoc.c \
-        input_pharse.c \
         builtin/builtin_dispatch.c \
         builtin/builtin_cd.c \
         builtin/builtin_echo.c \
@@ -26,30 +29,28 @@ SRC =   main.c \
         builtin/builtin_pwd.c \
         builtin/builtin_unset.c \
         builtin/builtin_utils.c \
+        builtin/builtin_utils2.c \
         expander/expander.c \
         expander/expander_token.c \
-        expander/expander_var.c
-
-# test uses the same files minus main.c, plus test_builtin.c
-TEST_SRC = test_builtin.c \
-           main_exit.c \
-		   utils.c \
-           tokenizer.c \
-		   signal/signals.c \
-		   signal/signals_heredoc.c \
-           builtin/builtin_dispatch.c \
-           builtin/builtin_cd.c \
-           builtin/builtin_echo.c \
-           builtin/builtin_env.c \
-           builtin/builtin_env_utils.c \
-           builtin/builtin_exit.c \
-           builtin/builtin_export.c \
-           builtin/builtin_pwd.c \
-           builtin/builtin_unset.c \
-           builtin/builtin_utils.c \
-           expander/expander.c \
-           expander/expander_token.c \
-           expander/expander_var.c 
+        expander/expander_var.c \
+        executor/exec_iofiles_utils.c \
+        executor/exec_cmd.c \
+        executor/exec_cmd2.c \
+        executor/exec_cmd3.c \
+        executor/exec_cmd_utils.c \
+        executor/exec_heredoc.c \
+        executor/exec_heredoc2.c \
+        executor/exec_iofiles.c \
+        executor/exec_iofiles_check.c \
+        debug.c \
+        utils_tab.c \
+        parser/parser_cmd.c \
+        parser/parser_check.c \
+        parser/parser_check2.c \
+        parser/parser_check_utils.c \
+        parser/parser_get_info.c \
+        parser/parser_infiles.c \
+        parser/parser_outfiles.c
 
 OBJ      = $(SRC:.c=.o)
 TEST_OBJ = $(TEST_SRC:.c=.o)
@@ -61,14 +62,6 @@ $(LIBFT):
 
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) $(OBJ) -L$(LIBFT_DIR) -lft -lreadline -o $(TARGET)
-
-# ── test target ──────────────────────────────────────────────────────────────
-test: $(LIBFT) $(TEST_OBJ)
-	$(CC) $(CFLAGS) $(TEST_OBJ) -L$(LIBFT_DIR) -lft -lreadline -o $(TEST)
-	@echo ""
-	@echo "Running tests..."
-	@echo ""
-	./$(TEST)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
