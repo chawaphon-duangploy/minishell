@@ -6,7 +6,7 @@
 /*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 15:50:26 by cduangpl          #+#    #+#             */
-/*   Updated: 2026/02/27 16:01:43 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/03/02 17:41:17 by cduangpl         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 void	exec_cmd_not_found(t_cmd_group *cur)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(cur->cmd, STDERR_FILENO);
+	if (cur && cur->cmd)
+		ft_putstr_fd(cur->cmd, STDERR_FILENO);
 	ft_putendl_fd(": command not found", STDERR_FILENO);
 	exit(127);
 }

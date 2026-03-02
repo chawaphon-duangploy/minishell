@@ -12,6 +12,7 @@ INCLUDES  = -I. -I$(LIBFT_DIR)
 SRC =   main.c \
 		utils.c \
         utils2.c \
+        utils3.c \
         main_exit.c \
         tokenizer.c \
         tokenizer_utils.c \
