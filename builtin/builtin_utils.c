@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: slimvutt <slimvut@fpgij;dgj;ds.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/27 14:46:22 by cduangpl          #+#    #+#             */
-/*   Updated: 2026/02/27 14:47:40 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/03/02 15:06:01 by slimvutt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int	find_env_index(char **env, char *arg)
 int	append_env(char ***env, char *arg)
 {
 	char	**new_env;
+	char	**old_env;
 	int		size;
 	int		i;
 
@@ -67,7 +68,9 @@ int	append_env(char ***env, char *arg)
 	if (new_env[i] == NULL)
 		return (1);
 	new_env[i + 1] = NULL;
+	old_env = *env;
 	*env = new_env;
+	free(old_env);
 	return (0);
 }
 
@@ -75,6 +78,7 @@ int	set_env_var(char ***env, char *arg)
 {
 	int		idx;
 	char	*dup;
+	char	*old;
 
 	idx = find_env_index(*env, arg);
 	if (idx >= 0)
@@ -82,7 +86,9 @@ int	set_env_var(char ***env, char *arg)
 		dup = ft_strdup(arg);
 		if (dup == NULL)
 			return (1);
+		old = (*env)[idx];
 		(*env)[idx] = dup;
+		free(old);
 		return (0);
 	}
 	return (append_env(env, arg));
@@ -90,9 +96,10 @@ int	set_env_var(char ***env, char *arg)
 
 void	inner_unset(char *cur, char ***env_ptr)
 {
-	int	i;
-	int	env_len;
-	int	arg_len;
+	int		i;
+	int		env_len;
+	int		arg_len;
+	char	*to_free;
 
 	i = -1;
 	arg_len = ft_strlen(cur);
@@ -102,11 +109,13 @@ void	inner_unset(char *cur, char ***env_ptr)
 		if (ft_strncmp((*env_ptr)[i], cur, arg_len) == 0
 			&& (int)ft_strlen((*env_ptr)[i]) >= arg_len)
 		{
+			to_free = (*env_ptr)[i];
 			if (i == env_len - 1)
 				(*env_ptr)[i] = NULL;
 			else
 				ft_memmove(&(*env_ptr)[i], &(*env_ptr)[i + 1],
 					(env_len - i) * sizeof(char *));
+			free(to_free);
 			break ;
 		}
 	}

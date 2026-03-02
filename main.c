@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: slimvutt <slimvut@fpgij;dgj;ds.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
-/*   Updated: 2026/02/27 15:18:14 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/03/02 15:05:16 by slimvutt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,10 @@ static void	process_line(char *line, char ***env_ptr, int *exit_status)
 	{
 		ft_putstr_fd("minishell: syntax error: unclosed quote\n",
 			STDERR_FILENO);
-		*exit_status = 2;
-		get_exit_stats(*exit_status);
+		exit_status_help_process_line(exit_status);
 	}
 	else if (!is_valid_tokens(line))
-	{
-		*exit_status = 2;
-		get_exit_stats(*exit_status);
-	}
+		exit_status_help_process_line(exit_status);
 	else
 	{
 		cmds = init_cmd_group(line, env_ptr, exit_status);
@@ -79,6 +75,7 @@ static void	process_line(char *line, char ***env_ptr, int *exit_status)
 			if (*exit_status == 130)
 				g_status = SIGINT;
 			get_exit_stats(*exit_status);
+			free_cmd_group(cmds);
 		}
 	}
 }
@@ -114,6 +111,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	**env;
 	char	***env_ptr;
+	int		exit_code;
 
 	if (argc > 1)
 	{
@@ -127,5 +125,7 @@ int	main(int argc, char **argv, char **envp)
 	env = init_env(envp);
 	env_ptr = &env;
 	set_shlvl(env_ptr);
-	return (run_shell(env_ptr));
+	exit_code = run_shell(env_ptr);
+	cleanup_shell(NULL, env);
+	return (exit_code);
 }

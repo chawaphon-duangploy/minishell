@@ -2,7 +2,7 @@
 TARGET  = minishell
 TEST    = test_builtin
 CC      = cc
-CFLAGS  = -Wall -Wextra -Werror -g
+CFLAGS  = -Wall -Wextra -Werror -g3
 
 LIBFT_DIR = libft
 LIBFT     = $(LIBFT_DIR)/libft.a
@@ -50,7 +50,10 @@ SRC =   main.c \
         parser/parser_check_utils.c \
         parser/parser_get_info.c \
         parser/parser_infiles.c \
-        parser/parser_outfiles.c
+        parser/parser_outfiles.c \
+        cleanup.c \
+        cleanup_2.c \
+        parser/parser_cmd_help.c
 
 OBJ      = $(SRC:.c=.o)
 TEST_OBJ = $(TEST_SRC:.c=.o)

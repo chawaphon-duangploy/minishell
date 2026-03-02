@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cduangpl <cduangpl@student.42.fr>          +#+  +:+       +#+        */
+/*   By: slimvutt <slimvut@fpgij;dgj;ds.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by minishell         #+#    #+#             */
-/*   Updated: 2026/02/27 16:26:33 by cduangpl         ###   ########.fr       */
+/*   Updated: 2026/03/02 15:14:09 by slimvutt         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,4 +222,13 @@ bool		is_completed_quotes(char *line);
 int			is_token(char *str);
 int			is_fully_quoted(char *src, int len);
 char		*clean_token(char *token);
+
+void		free_cmd_group(t_cmd_group *cmd_group);
+void		free_env(char **env);
+void		cleanup_shell(t_cmd_group *cmd_group, char **env);
+void		cleanup_error(t_cmd_group *cmd_group);
+void		free_tokens_only(char **tokens);
+void		free_segments(char **segments);
+void		exit_status_help_process_line(int *exit_status);
+void		init_cmd_node_help(t_cmd_group *node, char ***env_ptr);
 #endif
